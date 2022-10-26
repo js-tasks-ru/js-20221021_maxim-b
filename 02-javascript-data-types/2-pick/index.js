@@ -4,7 +4,6 @@
  * @param {...string} fields - the properties paths to pick
  * @returns {object} - returns the new object
  */
-import {re} from "@babel/core/lib/vendor/import-meta-resolve";
 
 export const pick = (obj, ...fields) => {
   let object = {};
