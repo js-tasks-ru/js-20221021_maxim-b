@@ -15,7 +15,7 @@ export function sortStrings(arr, param = 'asc') {
       return a.localeCompare(b);
     } else {
       if (a.slice(0, 1) !== b.slice(0, 1) && a.slice(0, 1).toLowerCase() === b.slice(0, 1).toLowerCase()) {
-        return 1;
+        return -1;
       }
       return b.localeCompare(a);
     }
