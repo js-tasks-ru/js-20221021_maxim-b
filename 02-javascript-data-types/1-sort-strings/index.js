@@ -9,15 +9,9 @@ export function sortStrings(arr, param = 'asc') {
   const arrCopy = [...arr];
   arrCopy.sort(function (a, b) {
     if (param === 'asc') {
-      if (a.slice(0, 1) !== b.slice(0, 1) && a.slice(0, 1).toLowerCase() === b.slice(0, 1).toLowerCase()) {
-        return 1;
-      }
-      return a.localeCompare(b);
+      return a.localeCompare(b, ['ru', 'en']);
     } else {
-      if (a.slice(0, 1) !== b.slice(0, 1) && a.slice(0, 1).toLowerCase() === b.slice(0, 1).toLowerCase()) {
-        return -1;
-      }
-      return b.localeCompare(a);
+      return b.localeCompare(a, ['ru', 'en']);
     }
   });
   return arrCopy;
