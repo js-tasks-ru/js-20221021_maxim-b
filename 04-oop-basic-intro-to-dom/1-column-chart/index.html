@@ -11,6 +11,7 @@
       <div id="orders" class="dashboard__chart_orders"></div>
       <div id="sales" class="dashboard__chart_sales"></div>
       <div id="customers" class="dashboard__chart_customers"></div>
+      <div id="nodata" class="dashboard__chart_orders"></div>
     </div>
 
     <script type="module">
@@ -27,6 +28,8 @@
         link: '#'
       });
 
+      console.log(ordersChart.chartHeight);
+
       const salesChart = new ColumnChart({
         data: salesData,
         label: 'sales',
@@ -40,9 +43,12 @@
         value: 321
       });
 
+      const nodataChart = new ColumnChart();
+
       orders.append(ordersChart.element);
       sales.append(salesChart.element);
       customers.append(customersChart.element);
+      nodata.append(nodataChart.element);
     </script>
   </body>
 </html>
