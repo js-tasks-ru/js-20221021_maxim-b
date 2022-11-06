@@ -1,4 +1,5 @@
 export default class SortableTable {
+
   element;
 
   constructor(headerConfig = [], data = []) {
@@ -6,6 +7,7 @@ export default class SortableTable {
     this.data = data;
 
     this.element = document.createElement("div");
+
     this.render();
   }
 
@@ -16,16 +18,35 @@ export default class SortableTable {
       desc: -1
     };
 
-    const direction = directions[orderValue]; // undefined
+    const direction = directions[orderValue];
+
+    const sortTypeObj = this.headerConfig.filter(obj => {
+      return obj.id === fieldValue;
+    });
+
+    const sortType = sortTypeObj[0].sortType;
 
     this.data.sort((a, b) => {
-      if (fieldValue === 'title') {
+      if (sortType === 'string') {
         return direction * a.title.localeCompare(b.title, ['ru', 'en'], {'caseFirst': 'upper'});
-      } else if (fieldValue === 'quantity' || fieldValue === 'price' || fieldValue === 'sales') {
+      } else if (sortType === 'number') {
         return direction * (parseInt(a[fieldValue]) - parseInt(b[fieldValue]));
       }
     });
     this.render();
+  }
+
+  getSubElements() {
+    const result = {};
+    const elements = this.element.querySelectorAll("[data-element]");
+
+    for (const subElement of elements) {
+      const name = subElement.dataset.element;
+
+      result[name] = subElement;
+    }
+
+    return result;
   }
 
   getTemplate() {
@@ -33,22 +54,22 @@ export default class SortableTable {
   <div class="sortable-table">
 
     <div data-element="header" class="sortable-table__header sortable-table__row">
-      <div class="sortable-table__cell" data-id="images" data-sortable="false" data-order="asc">
+      <div class="sortable-table__cell" data-id="images" data-sortable="false" >
         <span>Image</span>
       </div>
-      <div class="sortable-table__cell" data-id="title" data-sortable="false" data-order="asc">
+      <div class="sortable-table__cell" data-id="title" data-sortable="false" >
         <span>Name</span>
         <span data-element="arrow" class="sortable-table__sort-arrow">
           <span class="sort-arrow"></span>
         </span>
       </div>
-      <div class="sortable-table__cell" data-id="quantity" data-sortable="false" data-order="asc">
+      <div class="sortable-table__cell" data-id="quantity" data-sortable="false" >
         <span>Quantity</span>
       </div>
-      <div class="sortable-table__cell" data-id="price" data-sortable="false" data-order="asc">
+      <div class="sortable-table__cell" data-id="price" data-sortable="false" >
         <span>Price</span>
       </div>
-      <div class="sortable-table__cell" data-id="sales" data-sortable="false" data-order="asc">
+      <div class="sortable-table__cell" data-id="sales" data-sortable="false" >
         <span>Sales</span>
       </div>
     </div>
@@ -98,6 +119,7 @@ export default class SortableTable {
   render() {
     this.element.innerHTML = this.getTemplate();
     this.element = this.element.firstElementChild;
+    this.subElements = this.getSubElements();
   }
 }
 
