@@ -15,6 +15,8 @@ export default class SortableTable {
 
   sort(fieldValue, orderValue) {
 
+    this.fieldValue = fieldValue;
+
     const directions = {
       asc: 1,
       desc: -1
@@ -27,6 +29,7 @@ export default class SortableTable {
     });
 
     const sortType = sortTypeObj[0].sortType;
+
 
     this.data.sort((a, b) => {
       if (sortType === 'string') {
@@ -56,24 +59,9 @@ export default class SortableTable {
   <div class="sortable-table">
 
     <div data-element="header" class="sortable-table__header sortable-table__row">
-      <div class="sortable-table__cell" data-id="images" data-sortable="false" >
-        <span>Image</span>
-      </div>
-      <div class="sortable-table__cell" data-id="title" data-sortable="false" >
-        <span>Name</span>
-        <span data-element="arrow" class="sortable-table__sort-arrow">
-          <span class="sort-arrow"></span>
-        </span>
-      </div>
-      <div class="sortable-table__cell" data-id="quantity" data-sortable="false" >
-        <span>Quantity</span>
-      </div>
-      <div class="sortable-table__cell" data-id="price" data-sortable="false" >
-        <span>Price</span>
-      </div>
-      <div class="sortable-table__cell" data-id="sales" data-sortable="false" >
-        <span>Sales</span>
-      </div>
+
+      ${this.getHeader()}
+
     </div>
 
     <div data-element="body" class="sortable-table__body">
@@ -102,12 +90,20 @@ export default class SortableTable {
 
   getElements() {
 
+    function getImage(item) {
+      if (item.images && item.images[0] && item.images[0].url.length) {
+        return item.images[0].url;
+      }
+      return "";
+    }
+
     return this.data
       .map(item => {
 
         return `<a href="/products/dvd/${item.id}" class="sortable-table__row">
         <div class="sortable-table__cell">
-          <img class="sortable-table-image" alt="Image" src="http://magazilla.ru/jpg_zoom1/430982.jpg"></div>
+          <img class="sortable-table-image" alt="Image" src="${getImage(item)}">
+          </div>
         <div class="sortable-table__cell">${item.title}</div>
 
         <div class="sortable-table__cell">${item.quantity}</div>
@@ -122,6 +118,23 @@ export default class SortableTable {
     this.element.innerHTML = this.getTemplate();
     this.element = this.element.firstElementChild;
     this.subElements = this.getSubElements();
+  }
+
+  getHeader() {
+
+    return this.headerConfig.map(item => {
+      let arrow = "";
+      if (this.fieldValue === item.id) {
+        arrow = `<span data-element="arrow" class="sortable-table__sort-arrow">
+          <span class="sort-arrow"></span>
+        </span>`;
+      }
+      return `<div class="sortable-table__cell" data-id="images" data-sortable="false" >
+        <span>${item.title}</span>
+        ${arrow}
+      </div>`;
+    }).join("");
+
   }
 }
 
