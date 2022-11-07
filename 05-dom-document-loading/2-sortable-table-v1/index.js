@@ -2,6 +2,8 @@ export default class SortableTable {
 
   element;
 
+  subElements = {};
+
   constructor(headerConfig = [], data = []) {
     this.headerConfig = headerConfig;
     this.data = data;

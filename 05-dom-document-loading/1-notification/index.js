@@ -2,8 +2,6 @@ export default class NotificationMessage {
 
   duration = 0;
 
-  static counter = 0;
-
   constructor(title, params) {
     this.title = title;
     if (params && params.duration) {
@@ -13,7 +11,6 @@ export default class NotificationMessage {
     if (params && params.type) {
       this.type = params.type;
     }
-
 
     const element = document.createElement("div");
     element.innerHTML = this.getTemplate();
@@ -33,19 +30,14 @@ export default class NotificationMessage {
   }
 
 
-  show(div) {
+  show(element = document.body) {
 
-    if (NotificationMessage.counter > 0) {
-      return;
+    const selector = element.querySelector('.notification');
+    if (selector) {
+      selector.remove();
     }
 
-    if (div) {
-      div.append(this.element);
-    } else {
-      document.body.append(this.element);
-    }
-
-    NotificationMessage.counter++;
+    element.append(this.element);
 
     setTimeout(() => {
       this.remove();
@@ -67,11 +59,9 @@ export default class NotificationMessage {
 
   destroy() {
     this.remove();
-
   }
 
   remove() {
     this.element.remove();
-    NotificationMessage.counter--;
   }
 }
