@@ -100,16 +100,56 @@ export default class SortableTable {
     return this.data
       .map(item => {
 
-        return `<a href="/products/dvd/${item.id}" class="sortable-table__row">
-        <div class="sortable-table__cell">
-          <img class="sortable-table-image" alt="Image" src="${getImage(item)}">
-          </div>
-        <div class="sortable-table__cell">${item.title}</div>
+        let result = [];
 
-        <div class="sortable-table__cell">${item.quantity}</div>
-        <div class="sortable-table__cell">${item.price}</div>
-        <div class="sortable-table__cell">${item.sales}</div>
-      </a>`;
+        result.push(`<a href="/products/dvd/${item.id}" class="sortable-table__row">`);
+
+        const isImagesColumn = this.headerConfig.filter(obj => {
+          return obj.id === 'images';
+        });
+
+        const isTitleColumn = this.headerConfig.filter(obj => {
+          return obj.id === 'title';
+        });
+
+        const isQuantityColumn = this.headerConfig.filter(obj => {
+          return obj.id === 'quantity';
+        });
+
+        const isPriceColumn = this.headerConfig.filter(obj => {
+          return obj.id === 'price';
+        });
+
+        const isSalesColumn = this.headerConfig.filter(obj => {
+          return obj.id === 'sales';
+        });
+
+        if (isImagesColumn) {
+          result.push(`<div class="sortable-table__cell">
+          <img class="sortable-table-image" alt="Image" src="${getImage(item)}">
+          </div>`);
+        }
+
+        if (isTitleColumn) {
+          result.push(`<div class="sortable-table__cell">${item.title}</div>`);
+        }
+
+        if (isQuantityColumn) {
+          result.push(`<div class="sortable-table__cell">${item.quantity}</div>`);
+        }
+
+        if (isPriceColumn) {
+          result.push(`<div class="sortable-table__cell">${item.price}</div>`);
+        }
+
+        if (isSalesColumn) {
+          result.push(`<div class="sortable-table__cell">${item.sales}</div>`);
+        }
+
+        result.push(`</a>`);
+
+        return result.join("");
+
       })
       .join("");
   }
