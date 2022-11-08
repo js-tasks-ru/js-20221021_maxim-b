@@ -101,49 +101,16 @@ export default class SortableTable {
       .map(item => {
 
         let result = [];
-
         result.push(`<a href="/products/dvd/${item.id}" class="sortable-table__row">`);
 
-        const isImagesColumn = this.headerConfig.filter(obj => {
-          return obj.id === 'images';
-        });
+        for (const headerItem of this.headerConfig) {
 
-        const isTitleColumn = this.headerConfig.filter(obj => {
-          return obj.id === 'title';
-        });
+          if (typeof headerItem.template === 'function') {
+            result.push(headerItem.template(item));
+          } else {
+            result.push(`<div class="sortable-table__cell">${item[headerItem.id]}</div>`);
+          }
 
-        const isQuantityColumn = this.headerConfig.filter(obj => {
-          return obj.id === 'quantity';
-        });
-
-        const isPriceColumn = this.headerConfig.filter(obj => {
-          return obj.id === 'price';
-        });
-
-        const isSalesColumn = this.headerConfig.filter(obj => {
-          return obj.id === 'sales';
-        });
-
-        if (isImagesColumn) {
-          result.push(`<div class="sortable-table__cell">
-          <img class="sortable-table-image" alt="Image" src="${getImage(item)}">
-          </div>`);
-        }
-
-        if (isTitleColumn) {
-          result.push(`<div class="sortable-table__cell">${item.title}</div>`);
-        }
-
-        if (isQuantityColumn) {
-          result.push(`<div class="sortable-table__cell">${item.quantity}</div>`);
-        }
-
-        if (isPriceColumn) {
-          result.push(`<div class="sortable-table__cell">${item.price}</div>`);
-        }
-
-        if (isSalesColumn) {
-          result.push(`<div class="sortable-table__cell">${item.sales}</div>`);
         }
 
         result.push(`</a>`);
