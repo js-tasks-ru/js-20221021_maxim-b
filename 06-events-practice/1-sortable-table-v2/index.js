@@ -18,7 +18,7 @@ export default class SortableTable {
 
     this.sort(this.sorted.id, this.sorted.order);
 
-    this.addLintener();
+    this.addListener();
 
   }
 
@@ -113,7 +113,7 @@ export default class SortableTable {
     this.element.innerHTML = this.getTemplate();
     this.element = this.element.firstElementChild;
     this.subElements = this.getSubElements();
-    this.addLintener();
+    this.addListener();
   }
 
   getHeader() {
@@ -169,7 +169,7 @@ export default class SortableTable {
     this.render();
   }
 
-  addLintener() {
+  addListener() {
     for (const selector of this.element.querySelectorAll('.sortable-table__header .sortable-table__cell')) {
       selector.addEventListener('click', (event) => {
         this.sorted.id = event.currentTarget.dataset.id;
