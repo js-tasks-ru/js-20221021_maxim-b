@@ -1,11 +1,17 @@
 class Tooltip {
 
+  offset = 5;
+
   constructor() {
     if (!Tooltip.instance) {
       Tooltip.instance = this;
     }
 
     return Tooltip.instance;
+  }
+
+  get offset() {
+    return this.offset;
   }
 
 // Initialize object
@@ -20,8 +26,8 @@ class Tooltip {
     this.element = element;
 
     if (this.event) {
-      this.element.style.top = this.event.clientY + "px";
-      this.element.style.left = this.event.clientX + "px";
+      this.element.style.top = this.event.clientY + this.offset + "px";
+      this.element.style.left = this.event.clientX + this.offset + "px";
     }
 
 
@@ -39,7 +45,6 @@ class Tooltip {
   }
 
   initListeners() {
-    document.addEventListener('mousemove', this.callbackMove);
     document.addEventListener('pointerover', this.callbackOver);
     document.addEventListener('pointerout', this.callbackOut);
   }
@@ -53,6 +58,7 @@ class Tooltip {
     this.name = id;
     this.event = event;
     this.render();
+    document.addEventListener('mousemove', this.callbackMove);
   };
 
   callbackMove = (event) => {
@@ -61,11 +67,12 @@ class Tooltip {
       return;
     }
     this.name = id;
-    this.element.style.top = event.clientY + "px";
-    this.element.style.left = event.clientX + "px";
+    this.element.style.top = event.clientY + this.offset + "px";
+    this.element.style.left = event.clientX + this.offset + "px";
   };
 
   callbackOut = (event) => {
+    document.removeEventListener('mousemove', this.callbackMove);
     this.destroy();
   };
 
