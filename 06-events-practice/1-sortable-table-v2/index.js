@@ -21,6 +21,8 @@ export default class SortableTable {
 
     this.sort(this.sorted.id, this.sorted.order);
 
+    this.subElements = this.getSubElements(this.element);
+
     this.addListener();
 
   }
@@ -34,9 +36,9 @@ export default class SortableTable {
     }
   }
 
-  getSubElements() {
+  getSubElements(element) {
     const result = {};
-    const elements = this.element.querySelectorAll("[data-element]");
+    const elements = element.querySelectorAll("[data-element]");
 
     for (const subElement of elements) {
       const name = subElement.dataset.element;
@@ -100,8 +102,7 @@ export default class SortableTable {
   render() {
     this.element.innerHTML = this.getTemplate();
     this.element = this.element.firstElementChild;
-    this.subElements = this.getSubElements();
-    this.addListener();
+    this.subElements = this.getSubElements(this.element);
   }
 
   getHeader() {
@@ -144,6 +145,8 @@ export default class SortableTable {
     const {sortType, customSorting} = column;
 
 
+
+
     this.data.sort((a, b) => {
       if (sortType === 'string') {
         return direction * a[fieldValue].localeCompare(b[fieldValue], ['ru', 'en'], {'caseFirst': 'upper'});
@@ -157,11 +160,11 @@ export default class SortableTable {
   }
 
   addListener() {
-    document.addEventListener('click', (event) => {
+    document.addEventListener('pointerdown', (event) => {
       let headElem = event.target.closest('.sortable-table__cell');
       if (headElem.dataset.sortable) {
         this.sorted.id = headElem.dataset.id;
-        this.sorted.order = (headElem.dataset.order === 'asc') ? 'desc' : 'asc';
+        this.sorted.order = (this.sorted.order === 'asc') ? 'desc' : 'asc';
         this.sort(this.sorted.id, this.sorted.order);
       }
     });
