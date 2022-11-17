@@ -56,6 +56,9 @@ export default class ColumnChart {
     return fetchJson(this.url)
       .then(data => {
         this.data = Object.values(data);
+        if (this.data.length === 0) {
+          this.data = [];
+        }
         this.value = this.data.reduce((a, b) => a + b, 0);
         this.subElements.body.innerHTML = this.renderColumn();
         this.element.classList.remove(this.columnChartLoading);
