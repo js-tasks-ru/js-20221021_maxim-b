@@ -63,6 +63,8 @@ export default class ColumnChart {
         this.subElements.body.innerHTML = this.renderColumn();
         this.element.classList.remove(this.columnChartLoading);
         this.subElements.header.innerHTML = this.formatHeading(this.value);
+
+        return data;
       })
       .catch(reason => {
         console.error(reason);
