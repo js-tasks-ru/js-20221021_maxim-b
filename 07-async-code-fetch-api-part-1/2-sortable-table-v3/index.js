@@ -23,20 +23,6 @@ export default class SortableTable {
     this.sorted = sorted;
     this.isSortLocally = isSortLocally;
 
-
-    /*
-    _embed:
-subcategory.category
-    * _sort:
-title
-_order:
-asc
-_start:
-0
-_end:
-30
-    * */
-
     this.url.searchParams.set('_embed', 'subcategory.category');
     this.url.searchParams.set('_sort', this.sorted.id);
     this.url.searchParams.set('_order', this.sorted.order);
@@ -188,7 +174,7 @@ _end:
 
   addListener() {
     document.addEventListener('pointerdown', (event) => {
-      let headElem = event.target.closest('.sortable-table__cell');
+      const headElem = event.target.closest('.sortable-table__cell');
       if (headElem.dataset.sortable) {
         this.sorted.id = headElem.dataset.id;
         this.sorted.order = (this.sorted.order === 'asc') ? 'desc' : 'asc';
@@ -196,15 +182,24 @@ _end:
       }
     });
 
+    document.addEventListener('scroll', event => {
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && !this.isBottom) {
+        this.url.searchParams.set('_end', parseInt(this.url.searchParams.get('_end')) + 30);
+        this.isBottom = true;
+        this.loadData();
+      }
+    });
+
   }
 
   loadData() {
-    fetchJson(this.url)
+    return fetchJson(this.url)
       .then(data => {
         this.data = data;
         this.subElements.header.innerHTML = this.getHeader();
         this.subElements.body.innerHTML = this.getElements();
-        //this.sort(this.sorted.id, this.sorted.order);
+        this.isBottom = false;
+        return data;
       });
 
   }
