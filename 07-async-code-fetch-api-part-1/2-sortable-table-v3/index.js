@@ -10,6 +10,23 @@ export default class SortableTable {
 
   data = [];
 
+  onPointerDown = (event) => {
+    const headElem = event.target.closest('.sortable-table__cell');
+    if (headElem.dataset.sortable) {
+      this.sorted.id = headElem.dataset.id;
+      this.sorted.order = (this.sorted.order === 'asc') ? 'desc' : 'asc';
+      this.sort(this.sorted.id, this.sorted.order);
+    }
+  };
+
+  onScroll = event => {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && !this.isBottom) {
+      this.url.searchParams.set('_end', parseInt(this.url.searchParams.get('_end')) + 30);
+      this.isBottom = true;
+      this.loadData();
+    }
+  };
+
   constructor(headerConfig = [], {
     url = 'api/dashboard/bestsellers',
     isSortLocally = false,
@@ -31,11 +48,10 @@ export default class SortableTable {
 
 
     this.render();
-    this.loadData();
 
     this.subElements = this.getSubElements(this.element);
 
-    this.addListener();
+    this.initEventListeners();
 
   }
 
@@ -85,6 +101,8 @@ export default class SortableTable {
 
   destroy() {
     this.element.remove();
+    document.removeEventListener('pointerdown', this.onPointerDown);
+    document.removeEventListener('scroll', this.onScroll);
   }
 
   getElements() {
@@ -116,6 +134,8 @@ export default class SortableTable {
     this.element.innerHTML = this.getTemplate();
     this.element = this.element.firstElementChild;
     this.subElements = this.getSubElements(this.element);
+
+    this.loadData();
   }
 
   getHeader() {
@@ -172,24 +192,9 @@ export default class SortableTable {
     this.render();
   }
 
-  addListener() {
-    document.addEventListener('pointerdown', (event) => {
-      const headElem = event.target.closest('.sortable-table__cell');
-      if (headElem.dataset.sortable) {
-        this.sorted.id = headElem.dataset.id;
-        this.sorted.order = (this.sorted.order === 'asc') ? 'desc' : 'asc';
-        this.sort(this.sorted.id, this.sorted.order);
-      }
-    });
-
-    document.addEventListener('scroll', event => {
-      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && !this.isBottom) {
-        this.url.searchParams.set('_end', parseInt(this.url.searchParams.get('_end')) + 30);
-        this.isBottom = true;
-        this.loadData();
-      }
-    });
-
+  initEventListeners() {
+    document.addEventListener('pointerdown', this.onPointerDown);
+    document.addEventListener('scroll', this.onScroll);
   }
 
   loadData() {
