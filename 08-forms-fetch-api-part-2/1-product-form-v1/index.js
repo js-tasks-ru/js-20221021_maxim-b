@@ -10,9 +10,8 @@ export default class ProductForm {
   subElements = {};
 
   onSubmit = (event) => {
-    console.log(event);
-    event.preventDefault();
     this.save();
+    event.preventDefault();
   };
 
   constructor(productId) {
@@ -21,10 +20,6 @@ export default class ProductForm {
 
   isUpdate() {
     return this.productId;
-  }
-
-  isCreate() {
-    return !this.isUpdate();
   }
 
   get template() {
@@ -107,15 +102,12 @@ export default class ProductForm {
     this.subElements.productForm.addEventListener('submit', this.onSubmit);
   }
 
-  update() {
-
-  }
-
   initData() {
     if (this.isUpdate()) {
       this.initProductData();
     }
     this.initCategories();
+    this.initStatuses();
   }
 
   async initProductData() {
@@ -138,12 +130,15 @@ export default class ProductForm {
       discount
     } = product;
 
-    this.subElements.productForm.title.value = title;
-    this.subElements.productForm.description.innerHTML = description;
+    this.subElements.productForm.title.value = escapeHtml(title);
+    this.subElements.productForm.description.innerHTML = escapeHtml(description);
     this.subElements.imageListContainer.innerHTML = this.getImages(images);
-    this.subElements.productForm.price.value = price;
-    this.subElements.productForm.discount.value = discount;
-    this.subElements.productForm.quantity.value = quantity;
+    if (price) {
+      this.subElements.productForm.price.value = price;
+    }
+
+    this.subElements.productForm.discount.value = (discount);
+    this.subElements.productForm.quantity.value = (quantity);
     this.subElements.productForm.status.innerHTML = this.getStatus(status);
   }
 
@@ -173,8 +168,37 @@ export default class ProductForm {
     }
   }
 
-  save() {
+  async save() {
+    let eventName = 'product-saved';
 
+    if (this.isUpdate()) {
+      eventName = 'product-updated';
+    }
+
+    let formData = new FormData(this.subElements.productForm);
+
+    if (this.isUpdate()) {
+      formData.set('id', this.productId);
+    }
+
+
+    let response = await fetch(new URL('/api/rest/products', BACKEND_URL), {
+      method: 'POST',
+      body: formData
+    });
+
+    try {
+      let result = await response.json();
+      alert(result.message);
+    } catch (exception) {
+      console.error(exception);
+    }
+
+
+    this.element.dispatchEvent(new CustomEvent(eventName, {
+      detail: this.productId,
+      bubbles: true
+    }));
   }
 
   getImages(images) {
@@ -207,5 +231,9 @@ export default class ProductForm {
       }
       return `<option value="${index}" ${selected}>${value}</option>`;
     }).join("");
+  }
+
+  initStatuses() {
+    this.subElements.productForm.status.innerHTML = this.getStatus();
   }
 }
