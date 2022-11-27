@@ -29,9 +29,9 @@ export default class Page {
     this.element = element.firstElementChild;
     this.subElements = this.getSubElements(this.element);
 
-    this.initRangePicker();
-    this.initCharts();
-    this.initBestsellers();
+    let {from, to} = this.getRange();
+
+    this.initComponents(from, to);
 
     return this.element;
   }
@@ -71,17 +71,17 @@ export default class Page {
 
   }
 
-  initRangePicker() {
-    const rangePicker = new RangePicker();
+  initRangePicker(from, to) {
+
+    const rangePicker = new RangePicker({from, to});
+    if (this.subElements.rangePicker.firstChild) {
+      this.subElements.rangePicker.firstChild.remove();
+    }
     this.subElements.rangePicker.append(rangePicker.element);
-    rangePicker.element.addEventListener('date-select', event => {
-      console.error(event);
-    });
+    rangePicker.element.addEventListener('date-select', this.onDateSelect);
   }
 
-  initCharts() {
-
-    const { from, to } = this.getRange();
+  initCharts(from, to) {
 
     const ordersChart = new ColumnChart({
       url: 'api/dashboard/orders',
@@ -111,8 +111,19 @@ export default class Page {
       label: 'customers',
     });
 
+    if (this.subElements.ordersChart.firstChild) {
+      this.subElements.ordersChart.firstChild.remove();
+    }
     this.subElements.ordersChart.append(ordersChart.element);
+
+    if (this.subElements.salesChart.firstChild) {
+      this.subElements.salesChart.firstChild.remove();
+    }
     this.subElements.salesChart.append(salesChart.element);
+
+    if (this.subElements.customersChart.firstChild) {
+      this.subElements.customersChart.firstChild.remove();
+    }
     this.subElements.customersChart.append(customersChart.element);
   }
 
@@ -121,13 +132,28 @@ export default class Page {
     const to = new Date();
     const from = new Date(now.setMonth(now.getMonth() - 1));
 
-    return { from, to };
+    return {from, to};
   }
 
-  initBestsellers() {
+  initBestsellers(from, to) {
     const sortableTable = new SortableTable(header, {
-      url: '/api/dashboard/bestsellers'
+      url: '/api/dashboard/bestsellers',
+      from: from,
+      to: to
     });
+    if (this.subElements.sortableTable.firstChild) {
+      this.subElements.sortableTable.firstChild.remove();
+    }
     this.subElements.sortableTable.append(sortableTable.element);
+  }
+
+  onDateSelect = event => {
+    this.initComponents(event.detail.from, event.detail.to);
+  }
+
+  initComponents(from, to) {
+    this.initRangePicker(from, to);
+    this.initCharts(from, to);
+    this.initBestsellers(from, to);
   }
 }
